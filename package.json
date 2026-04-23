@@ -6,7 +6,11 @@
   "scripts": {
     "start": "electron .",
     "dev": "electron .",
-    "build": "electron-builder"
+    "build": "electron-builder",
+    "build:win": "electron-builder --win",
+    "build:mac": "electron-builder --mac",
+    "build:linux": "electron-builder --linux",
+    "build:all": "electron-builder --win --mac --linux"
   },
   "keywords": [
     "file-transfer",
@@ -30,6 +34,14 @@
     "productName": "RCM File Sender",
     "win": {
       "target": "portable",
+      "icon": "assets/logo.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/logo.png"
+    },
+    "linux": {
+      "target": "AppImage",
       "icon": "assets/logo.png"
     },
     "directories": {
