@@ -1,0 +1,226 @@
+:root {
+    --navy-blue: #1A365D;
+    --slate-gray: #4A5568;
+    --white: #FFFFFF;
+    --soft-gray: #F7FAFC;
+    --border-gray: #E2E8F0;
+    --success-green: #48BB78;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--soft-gray);
+    color: var(--slate-gray);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+header {
+    background-color: var(--navy-blue);
+    color: var(--white);
+    padding: 1rem 2rem;
+}
+
+.header-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.logo-group {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.logo-img {
+    width: 40px;
+    height: 40px;
+    border: 2px solid var(--white);
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+h1 {
+    font-size: 1.2rem;
+}
+
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.4rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--success-green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--success-green);
+}
+
+main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    max-width: 1000px;
+    width: 100%;
+}
+
+.qr-card {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 16px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.qr-card h2 {
+    color: var(--navy-blue);
+    margin-bottom: 0.5rem;
+}
+
+.qr-card p {
+    font-size: 0.9rem;
+    margin-bottom: 2rem;
+}
+
+#qrcode-container {
+    background: white;
+    padding: 1rem;
+    display: inline-block;
+    border-radius: 12px;
+    border: 1px solid var(--border-gray);
+    margin-bottom: 1.5rem;
+}
+
+#qrcode {
+    display: block;
+}
+
+.url-display {
+    background: var(--soft-gray);
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--navy-blue);
+    border: 1px solid var(--border-gray);
+}
+
+.info-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.info-card h3 {
+    color: var(--navy-blue);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+.info-card ul {
+    list-style: none;
+}
+
+.info-card li {
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-left: 2rem;
+    font-size: 1rem;
+}
+
+.info-card li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--success-green);
+    font-weight: bold;
+    font-size: 1.2rem;
+}
+
+.cancel-btn {
+    background-color: #E53E3E;
+    color: white;
+    border: none;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    margin-top: 1rem;
+    width: 100%;
+}
+
+.transfer-item {
+    margin-bottom: 1.5rem;
+    background: var(--soft-gray);
+    padding: 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--border-gray);
+}
+
+.file-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.progress-container {
+    height: 10px;
+    background: var(--white);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-bottom: 0.25rem;
+}
+
+.progress-fill {
+    height: 100%;
+    background: var(--navy-blue);
+    width: 0%;
+    transition: width 0.3s;
+}
+
+.percent-text {
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: var(--navy-blue);
+}
+
+footer {
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    background-color: var(--white);
+    border-top: 1px solid var(--border-gray);
+}
+
+footer strong {
+    color: var(--navy-blue);
+}

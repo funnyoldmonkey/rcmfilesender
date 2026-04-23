@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCM File Sender - Mobile</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+    <script src="/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <img src="/assets/logo.png" alt="Logo" class="logo-img">
+            <h1>RCM File Sender</h1>
+        </div>
+    </header>
+
+    <main>
+        <section class="upload-section">
+            <div class="upload-card">
+                <div class="upload-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                </div>
+                <h2>Send Files to PC</h2>
+                <p>Select large files to upload directly to your computer.</p>
+                
+                <input type="file" id="fileInput" multiple hidden>
+                <button id="selectBtn" class="primary-btn">Select Files</button>
+            </div>
+
+            <div id="progressContainer" class="progress-container" style="display: none;">
+                <h3>Uploading...</h3>
+                <div id="fileList"></div>
+            </div>
+
+            <div id="successMessage" class="success-message" style="display: none;">
+                <div class="success-icon">
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#1A365D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                </div>
+                <h2>Transfer Complete!</h2>
+                <p>Your files have been saved to the PC.</p>
+                <button onclick="location.reload()" class="secondary-btn">Send More</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>Built by <strong>Jall Fiel</strong></p>
+    </footer>
+
+    <script src="client.js"></script>
+</body>
+</html>

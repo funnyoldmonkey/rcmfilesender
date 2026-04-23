@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RCM File Sender - Desktop</title>
+    <link rel="stylesheet" href="desktop.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="http://localhost:977/socket.io/socket.io.js"></script>
+</head>
+<body>
+    <header>
+        <div class="header-container">
+            <div class="logo-group">
+                <img src="../assets/logo.png" alt="Logo" class="logo-img">
+                <h1>RCM File Sender</h1>
+            </div>
+            <div class="status-badge" id="serverStatus">
+                <span class="dot"></span>
+                <span id="statusText">Starting Server...</span>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="main-content">
+            <section class="qr-section">
+                <div class="qr-card">
+                    <h2>Scan to Connect</h2>
+                    <p>Open your phone's camera and scan the code below to start uploading.</p>
+                    <div id="qrcode-container">
+                        <canvas id="qrcode"></canvas>
+                    </div>
+                    <div class="url-display">
+                        <code id="serverUrl">Detecting IP...</code>
+                    </div>
+                </div>
+            </section>
+
+            <section class="info-section">
+                <div id="transfersSection" class="info-card" style="display: none;">
+                    <h3>Incoming Files</h3>
+                    <div id="transferList"></div>
+                    <button id="cancelAllBtn" class="cancel-btn">Cancel All Transfers</button>
+                </div>
+                <div id="infoCard" class="info-card">
+                    <h3>How it works</h3>
+                    <ul>
+                        <li>Make sure your phone and PC are on the same Wi-Fi.</li>
+                        <li>Scan the QR code to open the upload portal.</li>
+                        <li>Select files (even massive ones) to transfer.</li>
+                        <li>Files are saved directly to: <br><strong id="uploadPath">Desktop/RCM_Uploads</strong></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <p>Built by <strong>Jall Fiel</strong></p>
+    </footer>
+
+    <script src="renderer.js"></script>
+</body>
+</html>

@@ -1,0 +1,39 @@
+{
+  "name": "rcm-file-sender",
+  "version": "1.0.0",
+  "description": "Transfer massive files from phone to PC over local Wi-Fi",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron .",
+    "build": "electron-builder"
+  },
+  "keywords": [
+    "file-transfer",
+    "electron",
+    "mobile-to-pc"
+  ],
+  "author": "Jall Fiel",
+  "license": "MIT",
+  "dependencies": {
+    "busboy": "^1.6.0",
+    "express": "^4.18.2",
+    "qrcode": "^1.5.3",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "electron": "^25.0.0",
+    "electron-builder": "^24.4.0"
+  },
+  "build": {
+    "appId": "com.jallfiel.rcmfilesender",
+    "productName": "RCM File Sender",
+    "win": {
+      "target": "portable",
+      "icon": "assets/logo.png"
+    },
+    "directories": {
+      "output": "dist"
+    }
+  }
+}
