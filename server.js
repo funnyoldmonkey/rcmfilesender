@@ -63,7 +63,7 @@ app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
 app.post('/upload', (req, res) => {
     const busboy = Busboy({ headers: req.headers });
-    let currentFiles = [];
+    let activeStreams = [];
 
     busboy.on('file', (name, file, info) => {
         const { filename } = info;
@@ -77,31 +77,35 @@ app.post('/upload', (req, res) => {
         const saveTo = path.join(UPLOAD_DIR, uniqueName);
         const writeStream = fs.createWriteStream(saveTo);
         
+        const streamInfo = { name: uniqueName, path: saveTo, stream: writeStream, finished: false };
+        activeStreams.push(streamInfo);
+
         writeStream.on('error', (err) => {
             console.error('Write stream error:', err);
             io.emit('transfer-error', { name: uniqueName });
         });
-
-        currentFiles.push({ name: uniqueName, path: saveTo });
         
         console.log(`Receiving: ${uniqueName}`);
         io.emit('transfer-start', { name: uniqueName });
 
         file.pipe(writeStream);
 
-        let finished = false;
         file.on('end', () => {
-            finished = true;
+            streamInfo.finished = true;
             console.log(`Finished: ${uniqueName}`);
             io.emit('transfer-success', { name: uniqueName });
         });
+    });
 
-        // If the request is closed prematurely (cancelled)
-        req.on('close', () => {
-            if (!finished) {
-                writeStream.destroy();
-                if (fs.existsSync(saveTo)) fs.unlinkSync(saveTo);
-                io.emit('transfer-cancelled', { name: uniqueName });
+    // Handle cancellation for ALL files in this request at once (fixes memory leak)
+    req.on('close', () => {
+        activeStreams.forEach(item => {
+            if (!item.finished) {
+                item.stream.destroy();
+                if (fs.existsSync(item.path)) {
+                    try { fs.unlinkSync(item.path); } catch (e) {}
+                }
+                io.emit('transfer-cancelled', { name: item.name });
             }
         });
     });

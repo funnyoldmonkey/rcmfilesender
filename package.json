@@ -1,6 +1,6 @@
 {
   "name": "rcm-file-sender",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Transfer massive files from phone to PC over local Wi-Fi",
   "main": "main.js",
   "scripts": {

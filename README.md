@@ -1,8 +1,12 @@
-# RCM File Sender (v1.0.2)
+# RCM File Sender (v1.0.3)
 
 A high-performance, cross-platform local file transfer tool designed for moving massive files (100GB+) from mobile devices to your computer over local Wi-Fi.
 
 ![Logo](assets/logo.png)
+
+### 📥 [Download Latest Release (Windows & macOS)](https://github.com/funnyoldmonkey/rcmfilesender/releases/latest)
+
+---
 
 ## 🚀 Features
 - **Massive File Support**: Optimized for 100GB+ files using Node.js streaming (RAM usage stays low regardless of file size).
