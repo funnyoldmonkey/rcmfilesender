@@ -29,7 +29,10 @@ function createWindow(ip, port) {
 }
 
 app.whenReady().then(() => {
-    startServer((ip, port) => {
+    const desktopPath = app.getPath('desktop');
+    const uploadDir = path.join(desktopPath, 'RCM_Uploads');
+
+    startServer(uploadDir, (ip, port) => {
         createWindow(ip, port);
     });
 

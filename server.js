@@ -43,11 +43,7 @@ function getLocalIP() {
 }
 
 const LOCAL_IP = getLocalIP();
-const UPLOAD_DIR = path.join(os.homedir(), 'Desktop', 'RCM_Uploads');
-
-if (!fs.existsSync(UPLOAD_DIR)) {
-    fs.mkdirSync(UPLOAD_DIR, { recursive: true });
-}
+let UPLOAD_DIR = '';
 
 function getUniqueFilename(filename) {
     const ext = path.extname(filename);
@@ -71,10 +67,21 @@ app.post('/upload', (req, res) => {
 
     busboy.on('file', (name, file, info) => {
         const { filename } = info;
+
+        // Ensure directory exists right before writing
+        if (!fs.existsSync(UPLOAD_DIR)) {
+            fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+        }
+
         const uniqueName = getUniqueFilename(filename);
         const saveTo = path.join(UPLOAD_DIR, uniqueName);
         const writeStream = fs.createWriteStream(saveTo);
         
+        writeStream.on('error', (err) => {
+            console.error('Write stream error:', err);
+            io.emit('transfer-error', { name: uniqueName });
+        });
+
         currentFiles.push({ name: uniqueName, path: saveTo });
         
         console.log(`Receiving: ${uniqueName}`);
@@ -82,16 +89,20 @@ app.post('/upload', (req, res) => {
 
         file.pipe(writeStream);
 
+        let finished = false;
         file.on('end', () => {
+            finished = true;
             console.log(`Finished: ${uniqueName}`);
             io.emit('transfer-success', { name: uniqueName });
         });
 
         // If the request is closed prematurely (cancelled)
-        req.on('aborted', () => {
-            writeStream.destroy();
-            if (fs.existsSync(saveTo)) fs.unlinkSync(saveTo);
-            io.emit('transfer-cancelled', { name: uniqueName });
+        req.on('close', () => {
+            if (!finished) {
+                writeStream.destroy();
+                if (fs.existsSync(saveTo)) fs.unlinkSync(saveTo);
+                io.emit('transfer-cancelled', { name: uniqueName });
+            }
         });
     });
 
@@ -102,25 +113,69 @@ app.post('/upload', (req, res) => {
     req.pipe(busboy);
 });
 
+let UploaderId = null;
+
 // Socket logic for progress and remote cancel
 io.on('connection', (socket) => {
-    console.log('Client connected');
+    socket.on('identify', (type) => {
+        if (type === 'uploader') {
+            if (!UploaderId) {
+                UploaderId = socket.id;
+                socket.emit('session-status', { status: 'allowed' });
+                io.emit('uploader-connected'); // Notify Desktop in real-time
+                console.log('Uploader connected:', socket.id);
+            } else {
+                socket.emit('session-status', { status: 'busy' });
+                console.log('Busy: Refused uploader', socket.id);
+            }
+        } else {
+            console.log('Viewer connected:', socket.id);
+        }
+    });
 
     socket.on('upload-progress', (data) => {
         // Relay progress from mobile to desktop
         socket.broadcast.emit('remote-progress', data);
     });
 
+    socket.on('batch-start', (data) => {
+        socket.broadcast.emit('batch-start', data);
+    });
+
+    socket.on('batch-complete', () => {
+        socket.broadcast.emit('batch-complete');
+    });
+
     socket.on('cancel-all', () => {
         socket.broadcast.emit('force-cancel');
     });
+
+    socket.on('disconnect', () => {
+        if (socket.id === UploaderId) {
+            UploaderId = null;
+            io.emit('uploader-disconnected'); // Notify Desktop in real-time
+            console.log('Uploader disconnected, slot free.');
+            // Notify other mobile devices they can now connect
+            io.emit('session-status', { status: 'allowed' });
+        }
+    });
 });
 
-function startServer(onStart) {
+function startServer(dir, onStart) {
+    UPLOAD_DIR = dir;
+    // Initial creation
+    if (!fs.existsSync(UPLOAD_DIR)) {
+        fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+    }
+
     server.listen(PORT, '0.0.0.0', () => {
         console.log(`Server running at http://${LOCAL_IP}:${PORT}`);
         if (onStart) onStart(LOCAL_IP, PORT);
     });
+
+    // Support for massive files (10GB+): Disable timeouts
+    server.timeout = 0; 
+    server.keepAliveTimeout = 0;
 }
 
 module.exports = { startServer, getLocalIP, PORT };

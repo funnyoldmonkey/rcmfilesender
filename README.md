@@ -1,78 +1,42 @@
-# RCM File Sender
+# RCM File Sender (v1.0.2)
 
-**RCM File Sender** is a professional, high-performance desktop application built with Electron and Node.js. It allows users to transfer massive files (10GB+) from their mobile phones directly to their computer over a local Wi-Fi connection using a simple QR code scan.
+A high-performance, cross-platform local file transfer tool designed for moving massive files (100GB+) from mobile devices to your computer over local Wi-Fi.
 
-![Branding](assets/logo.png)
+![Logo](assets/logo.png)
 
-## 📥 [Download Latest Version (Windows & macOS)](https://github.com/funnyoldmonkey/rcmfilesender/releases/latest)
+## 🚀 Features
+- **Massive File Support**: Optimized for 100GB+ files using Node.js streaming (RAM usage stays low regardless of file size).
+- **Cross-Platform**: Full support for **Windows, macOS, and Linux**.
+- **Smart Batching**: Automatically collapses multiple file uploads into a single, clean progress bar.
+- **Session Lock**: Limits connections to one uploader at a time for maximum dedicated bandwidth.
+- **Zero Configuration**: No cloud or internet required. Transfers happen entirely over your local Wi-Fi.
+- **Auto-Duplicate Handling**: Automatically renames files if they already exist (e.g., `video (1).mp4`).
+- **Desktop Destination**: Saves everything to a dedicated `RCM_Uploads` folder on your desktop.
 
-## 🚀 Key Features
+## 🛠 Installation
 
-- **Multi-Platform**: Supports Windows, macOS, and Linux.
-- **Instant Connection**: Auto-detects PC's local IP and generates a high-contrast QR code for mobile discovery.
-- **High-Performance Streaming**: Uses `Busboy` to stream file data directly to the disk, ensuring low RAM usage even for 10GB+ files.
-- **Real-Time Sync**: Powered by `Socket.io`, providing live progress bars on both the Desktop and Mobile interfaces simultaneously.
-- **Bi-Directional Cancellation**: Ability to cancel transfers from either the phone or the PC with automatic cleanup of partial files.
-- **Smart Duplicate Handling**: Automatically renames files (e.g., `file (1).png`) if a duplicate exists in the upload folder.
-- **Premium UI/UX**: Professional "Navy Blue & White" corporate aesthetic with "Built by Jall Fiel" branding.
+### For Windows/macOS/Linux
+1. Download the latest release from the [Releases](https://github.com/funnyoldmonkey/rcmfilesender/releases) page.
+2. **Windows**: Run the portable `.exe`.
+3. **macOS**: Open the `.dmg` and drag to Applications.
+4. **Linux**: Run the `.AppImage`.
 
-## 🛠️ Technology Stack
+## 📖 How to Use
+1. Open the app on your computer.
+2. Scan the QR code with your phone (must be on the same Wi-Fi).
+3. Select your files and hit upload.
+4. Your files will appear in the `RCM_Uploads` folder on your Desktop.
 
-- **Core**: Electron, Node.js, Express.js
-- **Streaming**: Busboy
-- **Real-Time**: Socket.io
-- **Utilities**: QRCode.js
-- **Styling**: Vanilla CSS (Modern, Responsive)
+## 💻 Technical Stack
+- **Core**: Electron, Node.js
+- **Server**: Express, Socket.io, Busboy (Streaming)
+- **UI**: Vanilla HTML/CSS/JS
 
-## 📥 Installation & Setup
-
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/funnyoldmonkey/rcmfilesender.git
-   cd rcmfilesender
-   ```
-
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
-
-3. **Run the application**:
-   ```bash
-   npm start
-   ```
-
-## 📦 Building Standalone Executables
-
-The project is configured with GitHub Actions to build for all platforms automatically. However, you can build locally:
-
-### Windows
+## 🤝 Build & Development
 ```bash
-npm run build:win
+npm install
+npm start          # Run the app
+npm run build:all  # Build for all platforms
 ```
 
-### macOS (Requires a Mac)
-```bash
-npm run build:mac
-```
-
-### Linux
-```bash
-npm run build:linux
-```
-
-## 📂 Upload Directory
-
-By default, all uploaded files are saved to your Desktop:
-- **Windows**: `C:\Users\[YourUser]\Desktop\RCM_Uploads`
-- **macOS**: `/Users/[YourUser]/Desktop/RCM_Uploads`
-- **Linux**: `/home/[YourUser]/Desktop/RCM_Uploads`
-
-## 👤 Author
-
-Built with ❤️ by **Jall Fiel**.
-
-## 📄 License
-
-MIT License - feel free to use and modify for your own projects!
-
+Built by **Jall Fiel**
