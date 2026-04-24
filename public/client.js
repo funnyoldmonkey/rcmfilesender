@@ -103,6 +103,7 @@ function uploadFiles(files) {
     });
 
     xhr.open('POST', '/upload', true);
+    xhr.setRequestHeader('x-socket-id', socket.id);
     xhr.send(formData);
 }
 

@@ -61,14 +61,20 @@ function getUniqueFilename(filename) {
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/assets', express.static(path.join(__dirname, 'assets')));
 
+const activeUploads = new Map();
+
 app.post('/upload', (req, res) => {
     const busboy = Busboy({ headers: req.headers });
-    let activeStreams = [];
+    const socketId = req.headers['x-socket-id']; // We'll send this from the client
+    
+    if (!activeUploads.has(socketId)) {
+        activeUploads.set(socketId, []);
+    }
+    const myStreams = activeUploads.get(socketId);
 
     busboy.on('file', (name, file, info) => {
         const { filename } = info;
 
-        // Ensure directory exists right before writing
         if (!fs.existsSync(UPLOAD_DIR)) {
             fs.mkdirSync(UPLOAD_DIR, { recursive: true });
         }
@@ -78,7 +84,7 @@ app.post('/upload', (req, res) => {
         const writeStream = fs.createWriteStream(saveTo);
         
         const streamInfo = { name: uniqueName, path: saveTo, stream: writeStream, finished: false };
-        activeStreams.push(streamInfo);
+        myStreams.push(streamInfo);
 
         writeStream.on('error', (err) => {
             console.error('Write stream error:', err);
@@ -97,19 +103,6 @@ app.post('/upload', (req, res) => {
         });
     });
 
-    // Handle cancellation for ALL files in this request at once (fixes memory leak)
-    req.on('close', () => {
-        activeStreams.forEach(item => {
-            if (!item.finished) {
-                item.stream.destroy();
-                if (fs.existsSync(item.path)) {
-                    try { fs.unlinkSync(item.path); } catch (e) {}
-                }
-                io.emit('transfer-cancelled', { name: item.name });
-            }
-        });
-    });
-
     busboy.on('finish', () => {
         res.status(200).send('OK');
     });
@@ -119,47 +112,60 @@ app.post('/upload', (req, res) => {
 
 let UploaderId = null;
 
-// Socket logic for progress and remote cancel
+function cleanupStreams(socketId) {
+    const streams = activeUploads.get(socketId);
+    if (streams) {
+        streams.forEach(item => {
+            if (!item.finished) {
+                item.stream.destroy();
+                if (fs.existsSync(item.path)) {
+                    try { fs.unlinkSync(item.path); } catch (e) {}
+                }
+                io.emit('transfer-cancelled', { name: item.name });
+            }
+        });
+        activeUploads.delete(socketId);
+    }
+}
+
+// Socket logic
 io.on('connection', (socket) => {
     socket.on('identify', (type) => {
         if (type === 'uploader') {
             if (!UploaderId) {
                 UploaderId = socket.id;
                 socket.emit('session-status', { status: 'allowed' });
-                io.emit('uploader-connected'); // Notify Desktop in real-time
-                console.log('Uploader connected:', socket.id);
+                io.emit('uploader-connected');
             } else {
                 socket.emit('session-status', { status: 'busy' });
-                console.log('Busy: Refused uploader', socket.id);
             }
-        } else {
-            console.log('Viewer connected:', socket.id);
         }
-    });
-
-    socket.on('upload-progress', (data) => {
-        // Relay progress from mobile to desktop
-        socket.broadcast.emit('remote-progress', data);
     });
 
     socket.on('batch-start', (data) => {
         socket.broadcast.emit('batch-start', data);
     });
 
+    socket.on('upload-progress', (data) => {
+        socket.broadcast.emit('remote-progress', data);
+    });
+
     socket.on('batch-complete', () => {
         socket.broadcast.emit('batch-complete');
+        // Clear finished streams from the map to save memory
+        activeUploads.delete(socket.id);
     });
 
     socket.on('cancel-all', () => {
+        cleanupStreams(socket.id);
         socket.broadcast.emit('force-cancel');
     });
 
     socket.on('disconnect', () => {
+        cleanupStreams(socket.id);
         if (socket.id === UploaderId) {
             UploaderId = null;
-            io.emit('uploader-disconnected'); // Notify Desktop in real-time
-            console.log('Uploader disconnected, slot free.');
-            // Notify other mobile devices they can now connect
+            io.emit('uploader-disconnected');
             io.emit('session-status', { status: 'allowed' });
         }
     });

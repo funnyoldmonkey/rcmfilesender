@@ -71,7 +71,11 @@ socket.on('batch-start', ({ count }) => {
 });
 
 socket.on('transfer-start', ({ name }) => {
+    // IF we are in a batch, DO NOT show individual bars
     if (isCurrentBatch) return;
+
+    // Safety: If an individual file starts, we definitely aren't in a batch anymore
+    isCurrentBatch = false;
 
     transfersSection.style.display = 'block';
     infoCard.style.display = 'none';
